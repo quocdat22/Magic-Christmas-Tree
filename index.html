@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magic Christmas Tree 🎄</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            overflow: hidden;
+            background: linear-gradient(180deg, #050005 0%, #0a000a 50%, #050005 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+        
+        #controls {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .btn {
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .btn-gather {
+            background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 100%);
+            color: #FFD700;
+            box-shadow: 0 4px 20px rgba(27, 94, 32, 0.5), 0 0 30px rgba(255, 215, 0, 0.3);
+        }
+        
+        .btn-scatter {
+            background: linear-gradient(135deg, #D42426 0%, #E53935 100%);
+            color: #FFD700;
+            box-shadow: 0 4px 20px rgba(212, 36, 38, 0.5), 0 0 30px rgba(255, 215, 0, 0.3);
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 30px rgba(255, 215, 0, 0.6);
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+        }
+        
+        #title {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #FFD700;
+            font-size: 28px;
+            font-weight: bold;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 40px rgba(255, 215, 0, 0.4);
+            z-index: 100;
+            letter-spacing: 3px;
+        }
+        
+        #loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #FFD700;
+            font-size: 24px;
+            z-index: 200;
+        }
+
+        /* Hand Tracking UI */
+        #hand-controls {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .btn-hand {
+            padding: 12px 25px;
+            font-size: 14px;
+            font-weight: bold;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #6B21A8 0%, #9333EA 100%);
+            color: #FFD700;
+            box-shadow: 0 4px 20px rgba(107, 33, 168, 0.5);
+        }
+
+        .btn-hand:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 30px rgba(147, 51, 234, 0.6);
+        }
+
+        .btn-hand.active {
+            background: linear-gradient(135deg, #059669 0%, #10B981 100%);
+            box-shadow: 0 4px 20px rgba(5, 150, 105, 0.5);
+        }
+
+        #webcam-container {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            width: 320px;
+            height: 240px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            border: 3px solid rgba(255, 215, 0, 0.5);
+            display: none;
+            z-index: 100;
+        }
+
+        #webcam-container.active {
+            display: block;
+        }
+
+        #webcam {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1);
+        }
+
+        #hand-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transform: scaleX(-1);
+        }
+
+        #gesture-display {
+            position: fixed;
+            top: 140px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #FFD700;
+            padding: 15px 25px;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            z-index: 100;
+            display: none;
+            text-align: center;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        #gesture-display.active {
+            display: block;
+        }
+
+        .gesture-icon {
+            font-size: 32px;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        #hand-instruction {
+            position: fixed;
+            bottom: 350px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 12px;
+            z-index: 100;
+            display: none;
+            max-width: 300px;
+            line-height: 1.6;
+        }
+
+        #hand-instruction.active {
+            display: block;
+        }
+
+        #hand-instruction h4 {
+            color: #FFD700;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        #hand-instruction .gesture-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 8px 0;
+        }
+
+        #hand-instruction .gesture-item span {
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">✨ Loading Magic... ✨</div>
+    <div id="title">🎄 Magic Christmas Tree 🎄</div>
+    <div id="canvas-container"></div>
+    <div id="controls">
+        <button class="btn btn-gather" id="toggleBtn">🎄 Gather</button>
+    </div>
+
+    <!-- Hand Tracking UI -->
+    <div id="hand-controls">
+        <button class="btn-hand" id="handTrackingBtn">✋ Hand Control</button>
+    </div>
+    <div id="gesture-display">
+        <span class="gesture-icon" id="gestureIcon">👋</span>
+        <span id="gestureText">Detecting...</span>
+    </div>
+    <div id="hand-instruction">
+        <h4>🎮 Hand Gesture Controls</h4>
+        <div class="gesture-item">
+            <span>✊</span>
+            <div><strong>Nắm tay (Fist)</strong> → Gather</div>
+        </div>
+        <div class="gesture-item">
+            <span>🖐️</span>
+            <div><strong>Mở tay (Open)</strong> → Scatter</div>
+        </div>
+    </div>
+    <div id="webcam-container">
+        <video id="webcam" autoplay playsinline></video>
+        <canvas id="hand-canvas"></canvas>
+    </div>
+
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- OrbitControls -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <!-- MediaPipe Hands -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+
+    <script>
+        // ============================================
+        // CONFIGURATION
+        // ============================================
+        const CONFIG = {
+            // Particle counts
+            ornamentCount: 400,
+            starDustCount: 1000,
+            spiralDotCount: 200,
+            
+            // Tree parameters (Cone shape)
+            treeHeight: 20,
+            treeBaseRadius: 8,
+            
+            // Scatter sphere radius
+            scatterRadius: 50,
+            
+            // Animation
+            animationDuration: 1.8,
+            animationEase: "back.out(1.2)",
+            
+            // Colors
+            colors: {
+                red: 0xD42426,
+                green: 0x1B5E20,
+                gold: 0xFFD700,
+                brown: 0x4E342E,
+                white: 0xFFFFFF
+            }
+        };
+
+        // ============================================
+        // GLOBAL VARIABLES
+        // ============================================
+        let scene, camera, renderer, controls;
+        let ornaments = [];
+        let starDust, topStar, spiralRibbon;
+        let isGathered = false;
+        let animating = false;
+
+        // Hand Tracking Variables
+        let handTrackingEnabled = false;
+        let handsDetector = null;
+        let handCamera = null;
+        let lastGesture = null;
+        let gestureDebounceTime = 1000; // ms between gesture triggers
+        let lastGestureTime = 0;
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        function init() {
+            // Scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x050005);
+            scene.fog = new THREE.FogExp2(0x050005, 0.008);
+
+            // Camera
+            camera = new THREE.PerspectiveCamera(
+                60,
+                window.innerWidth / window.innerHeight,
+                0.1,
+                1000
+            );
+            camera.position.set(0, 0, 40);
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ 
+                antialias: true,
+                alpha: true 
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+            // Controls
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.autoRotate = true;
+            controls.autoRotateSpeed = 0.5;
+            controls.minDistance = 20;
+            controls.maxDistance = 100;
+            controls.maxPolarAngle = Math.PI * 0.85;
+
+            // Lighting
+            setupLighting();
+
+            // Create all entities
+            createOrnaments();
+            createStarDust();
+            createTopStar();
+            createSpiralRibbon();
+
+            // Initial scatter state
+            scatterAll();
+
+            // Event listeners
+            window.addEventListener('resize', onWindowResize);
+            document.getElementById('toggleBtn').addEventListener('click', toggleState);
+            document.getElementById('handTrackingBtn').addEventListener('click', toggleHandTracking);
+
+            // Hide loading
+            document.getElementById('loading').style.display = 'none';
+
+            // Start animation loop
+            animate();
+        }
+
+        // ============================================
+        // LIGHTING SETUP
+        // ============================================
+        function setupLighting() {
+            // Ambient light
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
+            scene.add(ambientLight);
+
+            // Main point light at star position
+            const starLight = new THREE.PointLight(0xFFD700, 2, 50);
+            starLight.position.set(0, CONFIG.treeHeight / 2 + 2, 0);
+            starLight.castShadow = true;
+            scene.add(starLight);
+
+            // Additional colored lights
+            const redLight = new THREE.PointLight(0xD42426, 1, 30);
+            redLight.position.set(-10, 5, 10);
+            scene.add(redLight);
+
+            const greenLight = new THREE.PointLight(0x1B5E20, 1, 30);
+            greenLight.position.set(10, 5, -10);
+            scene.add(greenLight);
+
+            // Hemisphere light for natural feel
+            const hemiLight = new THREE.HemisphereLight(0xFFD700, 0x1B5E20, 0.3);
+            scene.add(hemiLight);
+        }
+
+        // ============================================
+        // CREATE ORNAMENTS
+        // ============================================
+        function createOrnaments() {
+            const colorArray = [
+                CONFIG.colors.red,
+                CONFIG.colors.green,
+                CONFIG.colors.gold,
+                CONFIG.colors.brown
+            ];
+
+            for (let i = 0; i < CONFIG.ornamentCount; i++) {
+                // Alternate between box and sphere
+                const isBox = Math.random() > 0.5;
+                const size = 0.3 + Math.random() * 0.4;
+                
+                let geometry;
+                if (isBox) {
+                    geometry = new THREE.BoxGeometry(size, size, size);
+                } else {
+                    geometry = new THREE.SphereGeometry(size * 0.5, 16, 16);
+                }
+
+                // Random color from palette
+                const color = colorArray[Math.floor(Math.random() * colorArray.length)];
+                
+                const material = new THREE.MeshStandardMaterial({
+                    color: color,
+                    metalness: 0.3,
+                    roughness: 0.4,
+                    emissive: color,
+                    emissiveIntensity: 0.2
+                });
+
+                const mesh = new THREE.Mesh(geometry, material);
+                
+                // Store rotation speed for animation
+                mesh.userData = {
+                    rotationSpeed: {
+                        x: (Math.random() - 0.5) * 0.02,
+                        y: (Math.random() - 0.5) * 0.02,
+                        z: (Math.random() - 0.5) * 0.02
+                    },
+                    index: i,
+                    // Pre-calculate tree position
+                    treePosition: calculateTreePosition(i, CONFIG.ornamentCount),
+                    // Pre-calculate scatter position
+                    scatterPosition: calculateScatterPosition()
+                };
+
+                // Start at scatter position
+                mesh.position.copy(mesh.userData.scatterPosition);
+                
+                ornaments.push(mesh);
+                scene.add(mesh);
+            }
+        }
+
+        // ============================================
+        // CALCULATE TREE POSITION (CONE SHAPE)
+        // ============================================
+        function calculateTreePosition(index, total) {
+            const H = CONFIG.treeHeight;
+            const R_base = CONFIG.treeBaseRadius;
+            
+            // Normalize index to [0, 1]
+            const t = index / total;
+            
+            // Height: distribute from bottom to top
+            // Use square root for more density at bottom
+            const y_local = t * H;
+            
+            // Center the tree vertically (offset by -H/2)
+            const y = y_local - H / 2;
+            
+            // Radius decreases linearly with height
+            const r_at_y = R_base * (1 - y_local / H);
+            
+            // Random angle for this particle
+            const theta = Math.random() * Math.PI * 2;
+            
+            // Add some randomness to radius (±20%)
+            const r_random = r_at_y * (0.8 + Math.random() * 0.4);
+            
+            // Convert to Cartesian coordinates
+            const x = r_random * Math.cos(theta);
+            const z = r_random * Math.sin(theta);
+            
+            return new THREE.Vector3(x, y, z);
+        }
+
+        // ============================================
+        // CALCULATE SCATTER POSITION
+        // ============================================
+        function calculateScatterPosition() {
+            const radius = CONFIG.scatterRadius;
+            
+            // Random point in sphere using rejection sampling for uniform distribution
+            let x, y, z;
+            do {
+                x = (Math.random() - 0.5) * 2 * radius;
+                y = (Math.random() - 0.5) * 2 * radius;
+                z = (Math.random() - 0.5) * 2 * radius;
+            } while (x*x + y*y + z*z > radius * radius);
+            
+            return new THREE.Vector3(x, y, z);
+        }
+
+        // ============================================
+        // CREATE STAR DUST
+        // ============================================
+        function createStarDust() {
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(CONFIG.starDustCount * 3);
+            const colors = new Float32Array(CONFIG.starDustCount * 3);
+            const sizes = new Float32Array(CONFIG.starDustCount);
+
+            for (let i = 0; i < CONFIG.starDustCount; i++) {
+                const i3 = i * 3;
+                
+                // Random position in a large sphere around tree area
+                const radius = 30 + Math.random() * 40;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.random() * Math.PI;
+                
+                positions[i3] = radius * Math.sin(phi) * Math.cos(theta);
+                positions[i3 + 1] = radius * Math.cos(phi);
+                positions[i3 + 2] = radius * Math.sin(phi) * Math.sin(theta);
+
+                // Yellow to white colors
+                const brightness = 0.8 + Math.random() * 0.2;
+                colors[i3] = brightness;
+                colors[i3 + 1] = brightness;
+                colors[i3 + 2] = brightness * 0.8;
+
+                sizes[i] = Math.random() * 2 + 0.5;
+            }
+
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+            const material = new THREE.PointsMaterial({
+                size: 0.3,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.8,
+                blending: THREE.AdditiveBlending,
+                sizeAttenuation: true
+            });
+
+            starDust = new THREE.Points(geometry, material);
+            starDust.userData = { originalPositions: positions.slice() };
+            scene.add(starDust);
+        }
+
+        // ============================================
+        // CREATE STAR GEOMETRY
+        // ============================================
+        function createStarGeometry(outerRadius = 1.5, innerRadius = 0.75, points = 5, depth = 0.3) {
+            const shape = new THREE.Shape();
+            
+            for (let i = 0; i <= points * 2; i++) {
+                const angle = (i / (points * 2)) * Math.PI * 2;
+                const radius = i % 2 === 0 ? outerRadius : innerRadius;
+                const x = Math.cos(angle) * radius;
+                const y = Math.sin(angle) * radius;
+                
+                if (i === 0) {
+                    shape.moveTo(x, y);
+                } else {
+                    shape.lineTo(x, y);
+                }
+            }
+            
+            const extrudeSettings = {
+                depth: depth,
+                bevelEnabled: true,
+                bevelSegments: 2,
+                steps: 2,
+                bevelSize: 0.1,
+                bevelThickness: 0.1
+            };
+            
+            return new THREE.ExtrudeGeometry(shape, extrudeSettings);
+        }
+
+        // ============================================
+        // CREATE TOP STAR
+        // ============================================
+        function createTopStar() {
+            // Create 5-pointed star geometry
+            const geometry = createStarGeometry(1.5, 0.75, 5, 0.3);
+            
+            const material = new THREE.MeshStandardMaterial({
+                color: CONFIG.colors.gold,
+                metalness: 0.8,
+                roughness: 0.2,
+                emissive: CONFIG.colors.gold,
+                emissiveIntensity: 0.5
+            });
+
+            topStar = new THREE.Mesh(geometry, material);
+            topStar.position.set(0, CONFIG.treeHeight / 2 + 2, 0);
+            topStar.userData = {
+                originalY: CONFIG.treeHeight / 2 + 2,
+                scatterY: 60
+            };
+            
+            scene.add(topStar);
+
+            // Add glow effect
+            const glowGeometry = new THREE.SphereGeometry(2.5, 32, 32);
+            const glowMaterial = new THREE.MeshBasicMaterial({
+                color: CONFIG.colors.gold,
+                transparent: true,
+                opacity: 0.3,
+                blending: THREE.AdditiveBlending
+            });
+            const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+            topStar.add(glow);
+        }
+
+        // ============================================
+        // CREATE SPIRAL RIBBON
+        // ============================================
+        function createSpiralRibbon() {
+            const points = [];
+            const H = CONFIG.treeHeight;
+            const R_base = CONFIG.treeBaseRadius;
+            const turns = 5; // Number of spiral turns
+
+            for (let i = 0; i < CONFIG.spiralDotCount; i++) {
+                const t = i / CONFIG.spiralDotCount;
+                const y_local = t * H;
+                const y = y_local - H / 2; // Center vertically
+                const r = R_base * (1 - y_local / H) * 0.9; // Slightly inside the tree
+                const theta = t * turns * Math.PI * 2;
+                
+                const x = r * Math.cos(theta);
+                const z = r * Math.sin(theta);
+                
+                points.push(new THREE.Vector3(x, y, z));
+            }
+
+            // Create geometry from points
+            const geometry = new THREE.BufferGeometry().setFromPoints(points);
+            
+            const material = new THREE.PointsMaterial({
+                color: CONFIG.colors.gold,
+                size: 0.15,
+                transparent: true,
+                opacity: 0.9,
+                blending: THREE.AdditiveBlending
+            });
+
+            spiralRibbon = new THREE.Points(geometry, material);
+            spiralRibbon.userData = {
+                treePositions: geometry.attributes.position.array.slice(),
+                visible: false
+            };
+            spiralRibbon.visible = false;
+            scene.add(spiralRibbon);
+        }
+
+        // ============================================
+        // TRANSITION STATE
+        // ============================================
+        function transitionState(toGathered) {
+            if (animating) return;
+            animating = true;
+
+            const btn = document.getElementById('toggleBtn');
+            btn.disabled = true;
+
+            if (toGathered) {
+                gatherAll();
+            } else {
+                scatterAll();
+            }
+
+            // Re-enable button after animation
+            setTimeout(() => {
+                animating = false;
+                btn.disabled = false;
+                btn.className = toGathered ? 'btn btn-scatter' : 'btn btn-gather';
+                btn.innerHTML = toGathered ? '💥 Scatter' : '🎄 Gather';
+            }, CONFIG.animationDuration * 1000);
+        }
+
+        // ============================================
+        // GATHER ALL (FORM TREE)
+        // ============================================
+        function gatherAll() {
+            // Animate ornaments to tree positions
+            ornaments.forEach((mesh, index) => {
+                const delay = index * 0.002; // Stagger effect
+                
+                gsap.to(mesh.position, {
+                    x: mesh.userData.treePosition.x,
+                    y: mesh.userData.treePosition.y,
+                    z: mesh.userData.treePosition.z,
+                    duration: CONFIG.animationDuration,
+                    delay: delay,
+                    ease: CONFIG.animationEase
+                });
+            });
+
+            // Animate top star
+            gsap.to(topStar.position, {
+                y: topStar.userData.originalY,
+                duration: CONFIG.animationDuration,
+                ease: CONFIG.animationEase
+            });
+
+            gsap.to(topStar.rotation, {
+                y: Math.PI * 4,
+                duration: CONFIG.animationDuration,
+                ease: "power2.out"
+            });
+
+            // Show spiral ribbon
+            setTimeout(() => {
+                spiralRibbon.visible = true;
+                spiralRibbon.material.opacity = 0;
+                gsap.to(spiralRibbon.material, {
+                    opacity: 0.9,
+                    duration: 0.5
+                });
+            }, CONFIG.animationDuration * 500);
+        }
+
+        // ============================================
+        // SCATTER ALL (CHAOS MODE)
+        // ============================================
+        function scatterAll() {
+            // Generate new scatter positions and animate
+            ornaments.forEach((mesh, index) => {
+                // Generate new random scatter position
+                mesh.userData.scatterPosition = calculateScatterPosition();
+                
+                const delay = index * 0.002;
+                
+                gsap.to(mesh.position, {
+                    x: mesh.userData.scatterPosition.x,
+                    y: mesh.userData.scatterPosition.y,
+                    z: mesh.userData.scatterPosition.z,
+                    duration: CONFIG.animationDuration,
+                    delay: delay,
+                    ease: CONFIG.animationEase
+                });
+            });
+
+            // Animate top star up
+            gsap.to(topStar.position, {
+                y: topStar.userData.scatterY,
+                duration: CONFIG.animationDuration,
+                ease: CONFIG.animationEase
+            });
+
+            // Hide spiral ribbon
+            gsap.to(spiralRibbon.material, {
+                opacity: 0,
+                duration: 0.3,
+                onComplete: () => {
+                    spiralRibbon.visible = false;
+                }
+            });
+        }
+
+        // ============================================
+        // TOGGLE STATE
+        // ============================================
+        function toggleState() {
+            isGathered = !isGathered;
+            transitionState(isGathered);
+        }
+
+        // ============================================
+        // ANIMATION LOOP
+        // ============================================
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const time = Date.now() * 0.001;
+
+            // Rotate ornaments
+            ornaments.forEach(mesh => {
+                mesh.rotation.x += mesh.userData.rotationSpeed.x;
+                mesh.rotation.y += mesh.userData.rotationSpeed.y;
+                mesh.rotation.z += mesh.userData.rotationSpeed.z;
+            });
+
+            // Animate top star
+            if (topStar) {
+                topStar.rotation.y += 0.01;
+                topStar.rotation.x = Math.sin(time) * 0.1;
+            }
+
+            // Animate star dust (subtle movement)
+            if (starDust) {
+                const positions = starDust.geometry.attributes.position.array;
+                const original = starDust.userData.originalPositions;
+                
+                for (let i = 0; i < positions.length; i += 3) {
+                    positions[i] = original[i] + Math.sin(time + i) * 0.5;
+                    positions[i + 1] = original[i + 1] + Math.cos(time + i) * 0.5;
+                    positions[i + 2] = original[i + 2] + Math.sin(time + i * 0.5) * 0.5;
+                }
+                starDust.geometry.attributes.position.needsUpdate = true;
+            }
+
+            // Update controls
+            controls.update();
+
+            // Render
+            renderer.render(scene, camera);
+        }
+
+        // ============================================
+        // WINDOW RESIZE
+        // ============================================
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        // ============================================
+        // HAND TRACKING SYSTEM
+        // ============================================
+        async function toggleHandTracking() {
+            const btn = document.getElementById('handTrackingBtn');
+            const webcamContainer = document.getElementById('webcam-container');
+            const gestureDisplay = document.getElementById('gesture-display');
+            const instruction = document.getElementById('hand-instruction');
+
+            if (!handTrackingEnabled) {
+                // Enable hand tracking
+                btn.textContent = '⏳ Loading...';
+                btn.disabled = true;
+
+                try {
+                    await initHandTracking();
+                    handTrackingEnabled = true;
+                    btn.textContent = '🛑 Stop Hand Control';
+                    btn.classList.add('active');
+                    webcamContainer.classList.add('active');
+                    gestureDisplay.classList.add('active');
+                    instruction.classList.add('active');
+                } catch (error) {
+                    console.error('Hand tracking error:', error);
+                    alert('Could not start hand tracking. Please ensure camera access is allowed.');
+                    btn.textContent = '✋ Hand Control';
+                }
+                btn.disabled = false;
+            } else {
+                // Disable hand tracking
+                stopHandTracking();
+                handTrackingEnabled = false;
+                btn.textContent = '✋ Hand Control';
+                btn.classList.remove('active');
+                webcamContainer.classList.remove('active');
+                gestureDisplay.classList.remove('active');
+                instruction.classList.remove('active');
+            }
+        }
+
+        async function initHandTracking() {
+            const videoElement = document.getElementById('webcam');
+            const canvasElement = document.getElementById('hand-canvas');
+            const canvasCtx = canvasElement.getContext('2d');
+
+            // Initialize MediaPipe Hands
+            handsDetector = new Hands({
+                locateFile: (file) => {
+                    return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+                }
+            });
+
+            handsDetector.setOptions({
+                maxNumHands: 1,
+                modelComplexity: 1,
+                minDetectionConfidence: 0.7,
+                minTrackingConfidence: 0.5
+            });
+
+            handsDetector.onResults((results) => onHandResults(results, canvasElement, canvasCtx));
+
+            // Initialize Camera
+            handCamera = new Camera(videoElement, {
+                onFrame: async () => {
+                    if (handsDetector) {
+                        await handsDetector.send({ image: videoElement });
+                    }
+                },
+                width: 320,
+                height: 240
+            });
+
+            await handCamera.start();
+        }
+
+        function stopHandTracking() {
+            if (handCamera) {
+                handCamera.stop();
+                handCamera = null;
+            }
+            if (handsDetector) {
+                handsDetector.close();
+                handsDetector = null;
+            }
+            lastGesture = null;
+        }
+
+        function onHandResults(results, canvasElement, canvasCtx) {
+            // Set canvas size
+            canvasElement.width = 320;
+            canvasElement.height = 240;
+
+            // Clear canvas
+            canvasCtx.save();
+            canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+
+            if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+                const landmarks = results.multiHandLandmarks[0];
+
+                // Draw hand connections and landmarks
+                drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, {
+                    color: '#00FF00',
+                    lineWidth: 3
+                });
+                drawLandmarks(canvasCtx, landmarks, {
+                    color: '#FF0000',
+                    lineWidth: 1,
+                    radius: 3
+                });
+
+                // Detect gesture
+                const gesture = detectGesture(landmarks);
+                updateGestureDisplay(gesture);
+
+                // Trigger action based on gesture
+                const currentTime = Date.now();
+                if (gesture !== lastGesture && currentTime - lastGestureTime > gestureDebounceTime) {
+                    if (gesture === 'fist' && !isGathered && !animating) {
+                        isGathered = true;
+                        transitionState(true);
+                        updateButtonState();
+                        lastGestureTime = currentTime;
+                    } else if (gesture === 'open' && isGathered && !animating) {
+                        isGathered = false;
+                        transitionState(false);
+                        updateButtonState();
+                        lastGestureTime = currentTime;
+                    }
+                    lastGesture = gesture;
+                }
+            } else {
+                updateGestureDisplay('none');
+            }
+
+            canvasCtx.restore();
+        }
+
+        function detectGesture(landmarks) {
+            // Finger tip indices: thumb(4), index(8), middle(12), ring(16), pinky(20)
+            // Finger MCP (base) indices: thumb(2), index(5), middle(9), ring(13), pinky(17)
+            // Finger PIP (middle joint) indices: thumb(3), index(6), middle(10), ring(14), pinky(18)
+
+            const fingerTips = [4, 8, 12, 16, 20];
+            const fingerPIPs = [3, 6, 10, 14, 18];
+            const fingerMCPs = [2, 5, 9, 13, 17];
+
+            let fingersExtended = 0;
+
+            // Check thumb (compare x position for horizontal spread)
+            const thumbTip = landmarks[4];
+            const thumbIP = landmarks[3];
+            const thumbMCP = landmarks[2];
+            
+            // Thumb is extended if tip is far from palm center
+            const palmCenter = landmarks[0]; // wrist
+            const thumbExtended = Math.abs(thumbTip.x - palmCenter.x) > 0.1;
+            if (thumbExtended) fingersExtended++;
+
+            // Check other 4 fingers (compare y positions - lower y = higher on screen = extended)
+            for (let i = 1; i < 5; i++) {
+                const tipY = landmarks[fingerTips[i]].y;
+                const pipY = landmarks[fingerPIPs[i]].y;
+                const mcpY = landmarks[fingerMCPs[i]].y;
+
+                // Finger is extended if tip is above (lower y) the PIP joint
+                if (tipY < pipY - 0.02) {
+                    fingersExtended++;
+                }
+            }
+
+            // Determine gesture
+            if (fingersExtended >= 4) {
+                return 'open'; // Open hand - Scatter
+            } else if (fingersExtended <= 1) {
+                return 'fist'; // Fist - Gather
+            } else {
+                return 'partial';
+            }
+        }
+
+        function updateGestureDisplay(gesture) {
+            const gestureIcon = document.getElementById('gestureIcon');
+            const gestureText = document.getElementById('gestureText');
+
+            switch (gesture) {
+                case 'fist':
+                    gestureIcon.textContent = '✊';
+                    gestureText.textContent = 'Nắm tay → GATHER';
+                    gestureText.style.color = '#4ADE80';
+                    break;
+                case 'open':
+                    gestureIcon.textContent = '🖐️';
+                    gestureText.textContent = 'Mở tay → SCATTER';
+                    gestureText.style.color = '#F87171';
+                    break;
+                case 'partial':
+                    gestureIcon.textContent = '🤚';
+                    gestureText.textContent = 'Detecting...';
+                    gestureText.style.color = '#FFD700';
+                    break;
+                case 'none':
+                    gestureIcon.textContent = '👋';
+                    gestureText.textContent = 'Show your hand';
+                    gestureText.style.color = '#FFD700';
+                    break;
+            }
+        }
+
+        function updateButtonState() {
+            const btn = document.getElementById('toggleBtn');
+            btn.className = isGathered ? 'btn btn-scatter' : 'btn btn-gather';
+            btn.innerHTML = isGathered ? '💥 Scatter' : '🎄 Gather';
+        }
+
+        // ============================================
+        // START
+        // ============================================
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
