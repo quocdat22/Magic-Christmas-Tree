@@ -40,24 +40,44 @@
             padding: 15px 40px;
             font-size: 18px;
             font-weight: bold;
-            border: none;
+            border: 2px solid rgba(255, 255, 255, 0.2);
             border-radius: 50px;
             cursor: pointer;
             transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 2px;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.1) !important;
+            box-shadow: 0 4px 20px rgba(136, 204, 255, 0.3), 0 0 30px rgba(255, 215, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
         }
         
         .btn-gather {
-            background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 100%);
+            background: linear-gradient(135deg, rgba(27, 94, 32, 0.6) 0%, rgba(46, 125, 50, 0.6) 100%) !important;
             color: #FFD700;
-            box-shadow: 0 4px 20px rgba(27, 94, 32, 0.5), 0 0 30px rgba(255, 215, 0, 0.3);
+            box-shadow: 0 4px 20px rgba(136, 204, 255, 0.4), 0 0 30px rgba(255, 215, 0, 0.3);
         }
         
         .btn-scatter {
-            background: linear-gradient(135deg, #D42426 0%, #E53935 100%);
+            background: linear-gradient(135deg, rgba(212, 36, 38, 0.6) 0%, rgba(229, 57, 53, 0.6) 100%) !important;
             color: #FFD700;
-            box-shadow: 0 4px 20px rgba(212, 36, 38, 0.5), 0 0 30px rgba(255, 215, 0, 0.3);
+            box-shadow: 0 4px 20px rgba(136, 204, 255, 0.4), 0 0 30px rgba(255, 215, 0, 0.3);
         }
         
         .btn:hover {
@@ -108,15 +128,33 @@
             padding: 12px 25px;
             font-size: 14px;
             font-weight: bold;
-            border: none;
+            border: 2px solid rgba(255, 255, 255, 0.2);
             border-radius: 30px;
             cursor: pointer;
             transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 1px;
-            background: linear-gradient(135deg, #6B21A8 0%, #9333EA 100%);
+            background: linear-gradient(135deg, rgba(107, 33, 168, 0.6) 0%, rgba(147, 51, 234, 0.6) 100%);
             color: #FFD700;
-            box-shadow: 0 4px 20px rgba(107, 33, 168, 0.5);
+            box-shadow: 0 4px 20px rgba(136, 204, 255, 0.3);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-hand::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn-hand:hover::before {
+            left: 100%;
         }
 
         .btn-hand:hover {
@@ -125,8 +163,8 @@
         }
 
         .btn-hand.active {
-            background: linear-gradient(135deg, #059669 0%, #10B981 100%);
-            box-shadow: 0 4px 20px rgba(5, 150, 105, 0.5);
+            background: linear-gradient(135deg, rgba(5, 150, 105, 0.6) 0%, rgba(16, 185, 129, 0.6) 100%);
+            box-shadow: 0 4px 20px rgba(136, 204, 255, 0.5);
         }
 
         #webcam-container {
@@ -137,10 +175,11 @@
             height: 240px;
             border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-            border: 3px solid rgba(255, 215, 0, 0.5);
+            box-shadow: 0 4px 30px rgba(136, 204, 255, 0.4);
+            border: 3px solid rgba(136, 204, 255, 0.5);
             display: none;
             z-index: 100;
+            backdrop-filter: blur(10px);
         }
 
         #webcam-container.active {
@@ -167,7 +206,7 @@
             position: fixed;
             top: 140px;
             right: 20px;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(255, 255, 255, 0.1);
             color: #FFD700;
             padding: 15px 25px;
             border-radius: 15px;
@@ -176,7 +215,9 @@
             z-index: 100;
             display: none;
             text-align: center;
-            border: 2px solid rgba(255, 215, 0, 0.3);
+            border: 2px solid rgba(136, 204, 255, 0.4);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(136, 204, 255, 0.3);
         }
 
         #gesture-display.active {
@@ -193,7 +234,7 @@
             position: fixed;
             bottom: 350px;
             right: 20px;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(255, 255, 255, 0.1);
             color: white;
             padding: 15px;
             border-radius: 10px;
@@ -202,6 +243,9 @@
             display: none;
             max-width: 300px;
             line-height: 1.6;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(136, 204, 255, 0.3);
+            box-shadow: 0 4px 20px rgba(136, 204, 255, 0.3);
         }
 
         #hand-instruction.active {
@@ -309,6 +353,15 @@
         let isGathered = false;
         let animating = false;
 
+        // Snow System
+        let snowParticles = null;
+        let snowVelocities = [];
+        let snowSizes = [];
+        const snowCount = 700;
+
+        // Lighting
+        let starLight = null;
+
         // Hand Tracking Variables
         let handTrackingEnabled = false;
         let handsDetector = null;
@@ -316,6 +369,8 @@
         let lastGesture = null;
         let gestureDebounceTime = 1000; // ms between gesture triggers
         let lastGestureTime = 0;
+        let handPosition = new THREE.Vector3();
+        let handDetected = false;
 
         // ============================================
         // INITIALIZATION
@@ -323,8 +378,21 @@
         function init() {
             // Scene
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x050005);
-            scene.fog = new THREE.FogExp2(0x050005, 0.008);
+            
+            // Winter gradient background (top: #0A1628, bottom: #1B3A52)
+            const canvas = document.createElement('canvas');
+            canvas.width = 2;
+            canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+            const gradient = ctx.createLinearGradient(0, 0, 0, 256);
+            gradient.addColorStop(0, '#0A1628');
+            gradient.addColorStop(1, '#1B3A52');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 2, 256);
+            const texture = new THREE.CanvasTexture(canvas);
+            scene.background = texture;
+            
+            scene.fog = new THREE.FogExp2(0x0A1628, 0.008);
 
             // Camera
             camera = new THREE.PerspectiveCamera(
@@ -364,6 +432,7 @@
             createStarDust();
             createTopStar();
             createSpiralRibbon();
+            createSnowSystem();
 
             // Initial scatter state
             scatterAll();
@@ -388,11 +457,16 @@
             const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
             scene.add(ambientLight);
 
-            // Main point light at star position
-            const starLight = new THREE.PointLight(0xFFD700, 2, 50);
+            // Main point light at star position (will change color based on state)
+            starLight = new THREE.PointLight(0xFFD700, 2, 50);
             starLight.position.set(0, CONFIG.treeHeight / 2 + 2, 0);
             starLight.castShadow = true;
             scene.add(starLight);
+
+            // Winter directional light (ice blue from 45 degree angle)
+            const winterLight = new THREE.DirectionalLight(0xB3E5FC, 0.3);
+            winterLight.position.set(10, 10, 10);
+            scene.add(winterLight);
 
             // Additional colored lights
             const redLight = new THREE.PointLight(0xD42426, 1, 30);
@@ -404,7 +478,7 @@
             scene.add(greenLight);
 
             // Hemisphere light for natural feel
-            const hemiLight = new THREE.HemisphereLight(0xFFD700, 0x1B5E20, 0.3);
+            const hemiLight = new THREE.HemisphereLight(0xB3E5FC, 0x1B3A52, 0.3);
             scene.add(hemiLight);
         }
 
@@ -674,6 +748,176 @@
         }
 
         // ============================================
+        // CREATE SNOW SYSTEM
+        // ============================================
+        function createSnowSystem() {
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(snowCount * 3);
+            const sizes = new Float32Array(snowCount);
+
+            for (let i = 0; i < snowCount; i++) {
+                const i3 = i * 3;
+                
+                // Random position in a large area
+                positions[i3] = (Math.random() - 0.5) * 100;     // x
+                positions[i3 + 1] = Math.random() * 80 - 10;      // y (high up)
+                positions[i3 + 2] = (Math.random() - 0.5) * 100;  // z
+
+                // Random size
+                sizes[i] = Math.random() * 0.6 + 0.2; // 0.2 to 0.8
+                snowSizes.push(sizes[i]);
+
+                // Random velocity
+                snowVelocities.push({
+                    y: -(Math.random() * 0.06 + 0.02), // -0.02 to -0.08 (falling speed)
+                    x: 0,
+                    z: 0
+                });
+            }
+
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+            const material = new THREE.PointsMaterial({
+                color: 0xFFFFFF,
+                size: 0.5,
+                transparent: true,
+                opacity: 0.8,
+                blending: THREE.AdditiveBlending,
+                sizeAttenuation: true,
+                map: createSnowTexture(),
+                depthWrite: false
+            });
+
+            snowParticles = new THREE.Points(geometry, material);
+            scene.add(snowParticles);
+        }
+
+        // Create snow texture
+        function createSnowTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 32;
+            canvas.height = 32;
+            const ctx = canvas.getContext('2d');
+            
+            const gradient = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+            gradient.addColorStop(0, 'rgba(255,255,255,1)');
+            gradient.addColorStop(0.5, 'rgba(255,255,255,0.5)');
+            gradient.addColorStop(1, 'rgba(255,255,255,0)');
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 32, 32);
+            
+            const texture = new THREE.CanvasTexture(canvas);
+            return texture;
+        }
+
+        // ============================================
+        // UPDATE SNOW SYSTEM
+        // ============================================
+        function updateSnowSystem() {
+            if (!snowParticles) return;
+
+            const positions = snowParticles.geometry.attributes.position.array;
+
+            for (let i = 0; i < snowCount; i++) {
+                const i3 = i * 3;
+                const velocity = snowVelocities[i];
+
+                // Apply velocity
+                positions[i3] += velocity.x;
+                positions[i3 + 1] += velocity.y;
+                positions[i3 + 2] += velocity.z;
+
+                // Hand interaction - blow away snow
+                if (handDetected) {
+                    const dx = positions[i3] - handPosition.x;
+                    const dy = positions[i3 + 1] - handPosition.y;
+                    const dz = positions[i3 + 2] - handPosition.z;
+                    const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+                    if (distance < 5) { // Within 5 units
+                        const force = (5 - distance) / 5; // Stronger when closer
+                        velocity.x += (dx / distance) * force * 0.2;
+                        velocity.z += (dz / distance) * force * 0.2;
+                    }
+                }
+
+                // Decay horizontal velocity
+                velocity.x *= 0.98;
+                velocity.z *= 0.98;
+
+                // Reset if fallen below ground
+                if (positions[i3 + 1] < -10) {
+                    positions[i3] = (Math.random() - 0.5) * 100;
+                    positions[i3 + 1] = Math.random() * 30 + 50; // High up
+                    positions[i3 + 2] = (Math.random() - 0.5) * 100;
+                    velocity.x = 0;
+                    velocity.z = 0;
+                    velocity.y = -(Math.random() * 0.06 + 0.02);
+                }
+            }
+
+            snowParticles.geometry.attributes.position.needsUpdate = true;
+        }
+
+        // ============================================
+        // SNOW WAVE EFFECT (Gesture: Open Hand)
+        // ============================================
+        function createSnowWave(position) {
+            if (!snowParticles) return;
+
+            const positions = snowParticles.geometry.attributes.position.array;
+
+            for (let i = 0; i < Math.min(200, snowCount); i++) {
+                const randomIndex = Math.floor(Math.random() * snowCount);
+                const i3 = randomIndex * 3;
+
+                // Calculate direction from hand
+                const dx = positions[i3] - position.x;
+                const dy = positions[i3 + 1] - position.y;
+                const dz = positions[i3 + 2] - position.z;
+                const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+                if (distance < 15) {
+                    const velocity = snowVelocities[randomIndex];
+                    const force = 0.5;
+                    velocity.x += (dx / distance) * force;
+                    velocity.y += 0.3; // Upward boost
+                    velocity.z += (dz / distance) * force;
+                }
+            }
+        }
+
+        // ============================================
+        // SNOW SPIRAL EFFECT (Gesture: Fist)
+        // ============================================
+        function createSnowSpiral(position) {
+            if (!snowParticles) return;
+
+            const positions = snowParticles.geometry.attributes.position.array;
+            const time = Date.now() * 0.003;
+
+            for (let i = 0; i < snowCount; i++) {
+                const i3 = i * 3;
+                const dx = positions[i3] - position.x;
+                const dy = positions[i3 + 1] - position.y;
+                const dz = positions[i3 + 2] - position.z;
+                const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+                if (distance < 8) {
+                    const velocity = snowVelocities[i];
+                    const angle = Math.atan2(dz, dx) + 0.1; // Spiral angle
+                    const force = (8 - distance) / 8 * 0.1;
+                    
+                    velocity.x += Math.cos(angle) * force;
+                    velocity.z += Math.sin(angle) * force;
+                    velocity.y += Math.sin(time + i * 0.1) * 0.05; // Oscillate vertically
+                }
+            }
+        }
+
+        // ============================================
         // TRANSITION STATE
         // ============================================
         function transitionState(toGathered) {
@@ -702,6 +946,16 @@
         // GATHER ALL (FORM TREE)
         // ============================================
         function gatherAll() {
+            // Change star light back to gold
+            if (starLight) {
+                gsap.to(starLight.color, {
+                    r: 0xFF / 255,
+                    g: 0xD7 / 255,
+                    b: 0x00 / 255,
+                    duration: 0.5
+                });
+            }
+
             // Animate ornaments to tree positions
             ornaments.forEach((mesh, index) => {
                 const delay = index * 0.002; // Stagger effect
@@ -744,6 +998,16 @@
         // SCATTER ALL (CHAOS MODE)
         // ============================================
         function scatterAll() {
+            // Change star light to ice blue
+            if (starLight) {
+                gsap.to(starLight.color, {
+                    r: 0xE1 / 255,
+                    g: 0xF5 / 255,
+                    b: 0xFE / 255,
+                    duration: 0.5
+                });
+            }
+
             // Generate new scatter positions and animate
             ornaments.forEach((mesh, index) => {
                 // Generate new random scatter position
@@ -793,6 +1057,9 @@
             requestAnimationFrame(animate);
 
             const time = Date.now() * 0.001;
+
+            // Update snow system
+            updateSnowSystem();
 
             // Rotate ornaments
             ornaments.forEach(mesh => {
@@ -946,12 +1213,27 @@
                     radius: 3
                 });
 
+                // Update hand position for snow interaction
+                handDetected = true;
+                const palmCenter = landmarks[9]; // Middle finger MCP as palm center
+                // Map from normalized coordinates to 3D space
+                handPosition.x = (palmCenter.x - 0.5) * 80;
+                handPosition.y = (0.5 - palmCenter.y) * 60;
+                handPosition.z = 20;
+
                 // Detect gesture
                 const gesture = detectGesture(landmarks);
                 updateGestureDisplay(gesture);
 
-                // Trigger action based on gesture
+                // Snow effects based on gesture
                 const currentTime = Date.now();
+                
+                // Continuous spiral effect when fist is held
+                if (gesture === 'fist') {
+                    createSnowSpiral(handPosition);
+                }
+
+                // Trigger action based on gesture
                 if (gesture !== lastGesture && currentTime - lastGestureTime > gestureDebounceTime) {
                     if (gesture === 'fist' && !isGathered && !animating) {
                         isGathered = true;
@@ -962,12 +1244,19 @@
                         isGathered = false;
                         transitionState(false);
                         updateButtonState();
+                        // Snow wave effect
+                        createSnowWave(handPosition);
+                        lastGestureTime = currentTime;
+                    } else if (gesture === 'open') {
+                        // Even if not changing state, create wave effect
+                        createSnowWave(handPosition);
                         lastGestureTime = currentTime;
                     }
                     lastGesture = gesture;
                 }
             } else {
                 updateGestureDisplay('none');
+                handDetected = false;
             }
 
             canvasCtx.restore();
