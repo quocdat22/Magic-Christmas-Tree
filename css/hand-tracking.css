@@ -1,0 +1,161 @@
+/**
+ * @file hand-tracking.css
+ * @description Hand tracking UI styles including webcam, gestures, and instructions
+ */
+
+/* Hand Tracking UI */
+#hand-controls {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-end;
+}
+
+.btn-hand {
+    padding: 12px 25px;
+    font-size: 14px;
+    font-weight: bold;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: linear-gradient(135deg, rgba(107, 33, 168, 0.6) 0%, rgba(147, 51, 234, 0.6) 100%);
+    color: #FFD700;
+    box-shadow: 0 4px 20px rgba(136, 204, 255, 0.3);
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-hand::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+}
+
+.btn-hand:hover::before {
+    left: 100%;
+}
+
+.btn-hand:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 30px rgba(147, 51, 234, 0.6);
+}
+
+.btn-hand.active {
+    background: linear-gradient(135deg, rgba(5, 150, 105, 0.6) 0%, rgba(16, 185, 129, 0.6) 100%);
+    box-shadow: 0 4px 20px rgba(136, 204, 255, 0.5);
+}
+
+#webcam-container {
+    position: fixed;
+    bottom: 100px;
+    right: 20px;
+    width: 320px;
+    height: 240px;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 30px rgba(136, 204, 255, 0.4);
+    border: 3px solid rgba(136, 204, 255, 0.5);
+    display: none;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+}
+
+#webcam-container.active {
+    display: block;
+}
+
+#webcam {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scaleX(-1);
+}
+
+#hand-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transform: scaleX(-1);
+}
+
+#gesture-display {
+    position: fixed;
+    top: 140px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #FFD700;
+    padding: 15px 25px;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    z-index: 100;
+    display: none;
+    text-align: center;
+    border: 2px solid rgba(136, 204, 255, 0.4);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(136, 204, 255, 0.3);
+}
+
+#gesture-display.active {
+    display: block;
+}
+
+.gesture-icon {
+    font-size: 32px;
+    display: block;
+    margin-bottom: 5px;
+}
+
+#hand-instruction {
+    position: fixed;
+    bottom: 350px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 12px;
+    z-index: 100;
+    display: none;
+    max-width: 300px;
+    line-height: 1.6;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(136, 204, 255, 0.3);
+    box-shadow: 0 4px 20px rgba(136, 204, 255, 0.3);
+}
+
+#hand-instruction.active {
+    display: block;
+}
+
+#hand-instruction h4 {
+    color: #FFD700;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+#hand-instruction .gesture-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 8px 0;
+}
+
+#hand-instruction .gesture-item span {
+    font-size: 24px;
+}

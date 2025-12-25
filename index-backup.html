@@ -1,0 +1,1844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magic Christmas Tree 🎄</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            overflow: hidden;
+            background: linear-gradient(180deg, #050005 0%, #0a000a 50%, #050005 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+        
+        #controls {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .btn {
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.1) !important;
+            box-shadow: 0 4px 20px rgba(136, 204, 255, 0.3), 0 0 30px rgba(255, 215, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn-gather {
+            background: linear-gradient(135deg, rgba(27, 94, 32, 0.6) 0%, rgba(46, 125, 50, 0.6) 100%) !important;
+            color: #FFD700;
+            box-shadow: 0 4px 20px rgba(136, 204, 255, 0.4), 0 0 30px rgba(255, 215, 0, 0.3);
+        }
+        
+        .btn-scatter {
+            background: linear-gradient(135deg, rgba(212, 36, 38, 0.6) 0%, rgba(229, 57, 53, 0.6) 100%) !important;
+            color: #FFD700;
+            box-shadow: 0 4px 20px rgba(136, 204, 255, 0.4), 0 0 30px rgba(255, 215, 0, 0.3);
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 30px rgba(255, 215, 0, 0.6);
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+        }
+        
+        #title {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #FFD700;
+            font-size: 28px;
+            font-weight: bold;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 40px rgba(255, 215, 0, 0.4);
+            z-index: 100;
+            letter-spacing: 3px;
+        }
+        
+        #loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #FFD700;
+            font-size: 24px;
+            z-index: 200;
+        }
+
+        /* Hand Tracking UI */
+        #hand-controls {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .btn-hand {
+            padding: 12px 25px;
+            font-size: 14px;
+            font-weight: bold;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, rgba(107, 33, 168, 0.6) 0%, rgba(147, 51, 234, 0.6) 100%);
+            color: #FFD700;
+            box-shadow: 0 4px 20px rgba(136, 204, 255, 0.3);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-hand::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn-hand:hover::before {
+            left: 100%;
+        }
+
+        .btn-hand:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 30px rgba(147, 51, 234, 0.6);
+        }
+
+        .btn-hand.active {
+            background: linear-gradient(135deg, rgba(5, 150, 105, 0.6) 0%, rgba(16, 185, 129, 0.6) 100%);
+            box-shadow: 0 4px 20px rgba(136, 204, 255, 0.5);
+        }
+
+        #webcam-container {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            width: 320px;
+            height: 240px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 30px rgba(136, 204, 255, 0.4);
+            border: 3px solid rgba(136, 204, 255, 0.5);
+            display: none;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        #webcam-container.active {
+            display: block;
+        }
+
+        #webcam {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1);
+        }
+
+        #hand-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transform: scaleX(-1);
+        }
+
+        #gesture-display {
+            position: fixed;
+            top: 140px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #FFD700;
+            padding: 15px 25px;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            z-index: 100;
+            display: none;
+            text-align: center;
+            border: 2px solid rgba(136, 204, 255, 0.4);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(136, 204, 255, 0.3);
+        }
+
+        #gesture-display.active {
+            display: block;
+        }
+
+        .gesture-icon {
+            font-size: 32px;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        #hand-instruction {
+            position: fixed;
+            bottom: 350px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 12px;
+            z-index: 100;
+            display: none;
+            max-width: 300px;
+            line-height: 1.6;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(136, 204, 255, 0.3);
+            box-shadow: 0 4px 20px rgba(136, 204, 255, 0.3);
+        }
+
+        #hand-instruction.active {
+            display: block;
+        }
+
+        #hand-instruction h4 {
+            color: #FFD700;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        #hand-instruction .gesture-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 8px 0;
+        }
+
+        #hand-instruction .gesture-item span {
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">✨ Loading Magic... ✨</div>
+    <div id="title">🎄 Magic Christmas Tree 🎄</div>
+    <div id="canvas-container"></div>
+    <div id="controls">
+        <button class="btn btn-gather" id="toggleBtn">🎄 Gather</button>
+    </div>
+
+    <!-- Hand Tracking UI -->
+    <div id="hand-controls">
+        <button class="btn-hand" id="handTrackingBtn">✋ Hand Control</button>
+    </div>
+    <div id="gesture-display">
+        <span class="gesture-icon" id="gestureIcon">👋</span>
+        <span id="gestureText">Detecting...</span>
+    </div>
+    <div id="hand-instruction">
+        <h4>🎮 Hand Gesture Controls</h4>
+        <div class="gesture-item">
+            <span>✊</span>
+            <div><strong>Nắm tay (Fist)</strong> → Gather</div>
+        </div>
+        <div class="gesture-item">
+            <span>🖐️</span>
+            <div><strong>Mở tay (Open)</strong> → Scatter</div>
+        </div>
+    </div>
+    <div id="webcam-container">
+        <video id="webcam" autoplay playsinline></video>
+        <canvas id="hand-canvas"></canvas>
+    </div>
+
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- OrbitControls -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <!-- MediaPipe Hands -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+
+    <script>
+        // ============================================
+        // CONFIGURATION
+        // ============================================
+        const CONFIG = {
+            // Particle counts
+            ornamentCount: 400,
+            starDustCount: 1000,
+            spiralDotCount: 200,
+            
+            // Tree parameters (Cone shape)
+            treeHeight: 20,
+            treeBaseRadius: 8,
+            
+            // Scatter sphere radius
+            scatterRadius: 50,
+            
+            // Animation
+            animationDuration: 1.8,
+            animationEase: "back.out(1.2)",
+            
+            // Colors
+            colors: {
+                red: 0xD42426,
+                green: 0x1B5E20,
+                gold: 0xFFD700,
+                brown: 0x4E342E,
+                white: 0xFFFFFF
+            }
+        };
+
+        // ============================================
+        // GLOBAL VARIABLES
+        // ============================================
+        let scene, camera, renderer, controls;
+        let ornaments = [];
+        let starDust, topStar, spiralRibbon;
+        let isGathered = false;
+        let animating = false;
+
+        // Snow System
+        let snowParticles = null;
+        let snowVelocities = [];
+        let snowSizes = [];
+        const snowCount = 700;
+
+        // Lighting
+        let starLight = null;
+
+        // Hand Tracking Variables
+        let handTrackingEnabled = false;
+        let handsDetector = null;
+        let handCamera = null;
+        let lastGesture = null;
+        let gestureDebounceTime = 1000; // ms between gesture triggers
+        let lastGestureTime = 0;
+        let handPosition = new THREE.Vector3();
+        let handDetected = false;
+
+        // Sky Dome Variables
+        let skyDome = null;
+        let skyMaterial = null;
+        let twinklingStars = null;
+        let shootingStars = [];
+        let shootingStarTimer = 0;
+        let cloudLayer = [];
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        function init() {
+            // Scene
+            scene = new THREE.Scene();
+            
+            // Winter gradient background (top: #0A1628, bottom: #1B3A52)
+            const canvas = document.createElement('canvas');
+            canvas.width = 2;
+            canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+            const gradient = ctx.createLinearGradient(0, 0, 0, 256);
+            gradient.addColorStop(0, '#0A1628');
+            gradient.addColorStop(1, '#1B3A52');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 2, 256);
+            const texture = new THREE.CanvasTexture(canvas);
+            scene.background = texture;
+            
+            scene.fog = new THREE.FogExp2(0x0A1628, 0.01);
+
+            // Camera
+            camera = new THREE.PerspectiveCamera(
+                60,
+                window.innerWidth / window.innerHeight,
+                0.1,
+                1000
+            );
+            camera.position.set(0, 0, 40);
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ 
+                antialias: true,
+                alpha: true 
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+            // Controls
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.autoRotate = true;
+            controls.autoRotateSpeed = 0.5;
+            controls.minDistance = 20;
+            controls.maxDistance = 100;
+            controls.maxPolarAngle = Math.PI * 0.85;
+
+            // Lighting
+            setupLighting();
+
+            // Create sky dome first (renders behind everything)
+            createSkyDome();
+            createTwinklingStars();
+            createCloudLayer();
+
+            // Create all entities
+            createOrnaments();
+            createStarDust();
+            createTopStar();
+            createSpiralRibbon();
+            createSnowSystem();
+
+            // Initial scatter state
+            scatterAll();
+
+            // Event listeners
+            window.addEventListener('resize', onWindowResize);
+            document.getElementById('toggleBtn').addEventListener('click', toggleState);
+            document.getElementById('handTrackingBtn').addEventListener('click', toggleHandTracking);
+
+            // Hide loading
+            document.getElementById('loading').style.display = 'none';
+
+            // Start animation loop
+            animate();
+        }
+
+        // ============================================
+        // LIGHTING SETUP
+        // ============================================
+        function setupLighting() {
+            // Ambient light with slight aurora tint
+            const ambientLight = new THREE.AmbientLight(0x506070, 0.5);
+            scene.add(ambientLight);
+
+            // Main point light at star position (will change color based on state)
+            starLight = new THREE.PointLight(0xFFD700, 2, 50);
+            starLight.position.set(0, CONFIG.treeHeight / 2 + 2, 0);
+            starLight.castShadow = true;
+            scene.add(starLight);
+
+            // Winter directional light (ice blue from 45 degree angle)
+            const winterLight = new THREE.DirectionalLight(0xB3E5FC, 0.3);
+            winterLight.position.set(10, 10, 10);
+            scene.add(winterLight);
+
+            // Additional colored lights
+            const redLight = new THREE.PointLight(0xD42426, 1, 30);
+            redLight.position.set(-10, 5, 10);
+            scene.add(redLight);
+
+            const greenLight = new THREE.PointLight(0x1B5E20, 1, 30);
+            greenLight.position.set(10, 5, -10);
+            scene.add(greenLight);
+
+            // Hemisphere light for natural feel
+            const hemiLight = new THREE.HemisphereLight(0xB3E5FC, 0x1B3A52, 0.3);
+            scene.add(hemiLight);
+        }
+
+        // ============================================
+        // CREATE ORNAMENTS
+        // ============================================
+        function createOrnaments() {
+            const colorArray = [
+                CONFIG.colors.red,
+                CONFIG.colors.green,
+                CONFIG.colors.gold,
+                CONFIG.colors.brown
+            ];
+
+            const H = CONFIG.treeHeight;
+            const R_base = CONFIG.treeBaseRadius;
+
+            for (let i = 0; i < CONFIG.ornamentCount; i++) {
+                // Pre-calculate tree position to check if we should skip
+                const treePos = calculateTreePosition(i, CONFIG.ornamentCount);
+                const y = treePos.y;
+                const y_normalized = (y + H / 2) / H; // 0 to 1
+                
+                // Skip 30% of ornaments in top quarter for sparse elegant look
+                if (y_normalized > 0.75 && Math.random() < 0.3) {
+                    continue;
+                }
+
+                // Adjust size based on height - smaller at bottom to avoid clutter
+                const sizeMultiplier = y < -5 ? 0.8 : 1.0;
+                const baseSize = 0.3 + Math.random() * 0.4;
+                const size = baseSize * sizeMultiplier;
+                
+                // Alternate between box and sphere
+                const isBox = Math.random() > 0.5;
+                
+                let geometry;
+                if (isBox) {
+                    geometry = new THREE.BoxGeometry(size, size, size);
+                } else {
+                    geometry = new THREE.SphereGeometry(size * 0.5, 16, 16);
+                }
+
+                // Random color from palette
+                const color = colorArray[Math.floor(Math.random() * colorArray.length)];
+                
+                const material = new THREE.MeshStandardMaterial({
+                    color: color,
+                    metalness: 0.3,
+                    roughness: 0.4,
+                    emissive: color,
+                    emissiveIntensity: 0.2
+                });
+
+                const mesh = new THREE.Mesh(geometry, material);
+                
+                // Store rotation speed for animation
+                mesh.userData = {
+                    rotationSpeed: {
+                        x: (Math.random() - 0.5) * 0.02,
+                        y: (Math.random() - 0.5) * 0.02,
+                        z: (Math.random() - 0.5) * 0.02
+                    },
+                    index: i,
+                    // Use pre-calculated tree position
+                    treePosition: treePos,
+                    // Pre-calculate scatter position
+                    scatterPosition: calculateScatterPosition()
+                };
+
+                // Start at scatter position
+                mesh.position.copy(mesh.userData.scatterPosition);
+                
+                ornaments.push(mesh);
+                scene.add(mesh);
+            }
+
+            // Add extra 100 ornaments at bottom third for denser look
+            for (let i = 0; i < 100; i++) {
+                // Force y in bottom third range
+                const y = -H / 2 + Math.random() * (H / 3);
+                const y_local = y + H / 2;
+                
+                // Calculate corresponding radius at this height
+                const r_at_y = R_base * (1 - y_local / H);
+                const theta = Math.random() * Math.PI * 2;
+                const r_random = r_at_y * (0.7 + Math.random() * 0.5);
+                
+                const x = r_random * Math.cos(theta);
+                const z = r_random * Math.sin(theta);
+                
+                // Smaller size for bottom density ornaments
+                const size = (0.25 + Math.random() * 0.3) * 0.8;
+                const isBox = Math.random() > 0.5;
+                
+                let geometry;
+                if (isBox) {
+                    geometry = new THREE.BoxGeometry(size, size, size);
+                } else {
+                    geometry = new THREE.SphereGeometry(size * 0.5, 16, 16);
+                }
+
+                const color = colorArray[Math.floor(Math.random() * colorArray.length)];
+                
+                const material = new THREE.MeshStandardMaterial({
+                    color: color,
+                    metalness: 0.3,
+                    roughness: 0.4,
+                    emissive: color,
+                    emissiveIntensity: 0.2
+                });
+
+                const mesh = new THREE.Mesh(geometry, material);
+                
+                mesh.userData = {
+                    rotationSpeed: {
+                        x: (Math.random() - 0.5) * 0.02,
+                        y: (Math.random() - 0.5) * 0.02,
+                        z: (Math.random() - 0.5) * 0.02
+                    },
+                    index: CONFIG.ornamentCount + i,
+                    treePosition: new THREE.Vector3(x, y, z),
+                    scatterPosition: calculateScatterPosition()
+                };
+
+                mesh.position.copy(mesh.userData.scatterPosition);
+                
+                ornaments.push(mesh);
+                scene.add(mesh);
+            }
+        }
+
+        // ============================================
+        // CALCULATE TREE POSITION (CONE SHAPE)
+        // ============================================
+        function calculateTreePosition(index, total) {
+            const H = CONFIG.treeHeight;
+            const R_base = CONFIG.treeBaseRadius;
+            
+            // Normalize index to [0, 1]
+            const t = index / total;
+            
+            // Use power function to bias distribution towards bottom
+            // Power 1.7 pushes more particles to the lower part
+            const t_weighted = Math.pow(t, 1.7);
+            
+            // Height: distribute from bottom to top with weighted bias
+            const y_local = t_weighted * H;
+            
+            // Center the tree vertically (offset by -H/2)
+            const y = y_local - H / 2;
+            
+            // Radius decreases linearly with height (cone shape preserved)
+            const r_at_y = R_base * (1 - y_local / H);
+            
+            // Random angle for this particle
+            const theta = Math.random() * Math.PI * 2;
+            
+            // Adjust randomness based on height for better distribution
+            let r_random;
+            if (y < -5) {
+                // Bottom: wider spread for fuller look
+                r_random = r_at_y * (0.7 + Math.random() * 0.5);
+            } else if (y > 5) {
+                // Top: tighter for elegant look
+                r_random = r_at_y * (0.85 + Math.random() * 0.3);
+            } else {
+                // Middle: standard spread
+                r_random = r_at_y * (0.8 + Math.random() * 0.4);
+            }
+            
+            // Convert to Cartesian coordinates
+            const x = r_random * Math.cos(theta);
+            const z = r_random * Math.sin(theta);
+            
+            return new THREE.Vector3(x, y, z);
+        }
+
+        // ============================================
+        // CALCULATE SCATTER POSITION
+        // ============================================
+        function calculateScatterPosition() {
+            const radius = CONFIG.scatterRadius;
+            
+            // Random point in sphere using rejection sampling for uniform distribution
+            let x, y, z;
+            do {
+                x = (Math.random() - 0.5) * 2 * radius;
+                y = (Math.random() - 0.5) * 2 * radius;
+                z = (Math.random() - 0.5) * 2 * radius;
+            } while (x*x + y*y + z*z > radius * radius);
+            
+            return new THREE.Vector3(x, y, z);
+        }
+
+        // ============================================
+        // CREATE SKY DOME WITH AURORA SHADER
+        // ============================================
+        function createSkyDome() {
+            const geometry = new THREE.SphereGeometry(150, 64, 64);
+            
+            // Invert normals by scaling negatively
+            geometry.scale(-1, -1, -1);
+
+            // Vertex Shader
+            const vertexShader = `
+                varying vec3 vPosition;
+                varying vec2 vUv;
+                
+                void main() {
+                    vPosition = position;
+                    vUv = uv;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `;
+
+            // Fragment Shader
+            const fragmentShader = `
+                uniform float uTime;
+                uniform vec3 uAuroraColor1;
+                uniform vec3 uAuroraColor2;
+                uniform vec3 uAuroraColor3;
+                uniform vec3 uSkyColorBottom;
+                uniform vec3 uSkyColorTop;
+                
+                varying vec3 vPosition;
+                varying vec2 vUv;
+                
+                // Smooth step function for blending
+                float smoothBlend(float edge0, float edge1, float x) {
+                    float t = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0);
+                    return t * t * (3.0 - 2.0 * t);
+                }
+                
+                void main() {
+                    // Base gradient from horizon to zenith
+                    vec3 skyColor = mix(uSkyColorBottom, uSkyColorTop, vUv.y);
+                    
+                    // Aurora bands - only visible in upper hemisphere
+                    float auroraVisibility = smoothBlend(0.4, 0.6, vUv.y);
+                    
+                    if (auroraVisibility > 0.0) {
+                        // Layer 1: Green aurora
+                        float wave1 = sin(vUv.x * 3.0 + uTime * 0.5) * 0.5 + 0.5;
+                        wave1 = smoothBlend(0.3, 0.7, wave1);
+                        vec3 aurora1 = uAuroraColor1 * wave1 * 0.3;
+                        
+                        // Layer 2: Cyan aurora
+                        float wave2 = sin(vUv.x * 5.0 - uTime * 0.3 + 1.5) * 0.5 + 0.5;
+                        wave2 = smoothBlend(0.2, 0.8, wave2);
+                        vec3 aurora2 = uAuroraColor2 * wave2 * 0.25;
+                        
+                        // Layer 3: Magenta aurora
+                        float wave3 = sin(vUv.x * 7.0 + uTime * 0.7 + 3.0) * 0.5 + 0.5;
+                        wave3 = smoothBlend(0.25, 0.75, wave3);
+                        vec3 aurora3 = uAuroraColor3 * wave3 * 0.2;
+                        
+                        // Combine aurora layers
+                        vec3 aurora = (aurora1 + aurora2 + aurora3) * auroraVisibility;
+                        
+                        // Add some vertical variation
+                        float verticalVariation = sin(vUv.y * 8.0 + uTime * 0.2) * 0.5 + 0.5;
+                        aurora *= 0.5 + verticalVariation * 0.5;
+                        
+                        // Blend aurora with sky
+                        skyColor += aurora;
+                    }
+                    
+                    gl_FragColor = vec4(skyColor, 1.0);
+                }
+            `;
+
+            // Shader Material
+            skyMaterial = new THREE.ShaderMaterial({
+                vertexShader: vertexShader,
+                fragmentShader: fragmentShader,
+                uniforms: {
+                    uTime: { value: 0.0 },
+                    uAuroraColor1: { value: new THREE.Vector3(0.0, 1.0, 0.53) },
+                    uAuroraColor2: { value: new THREE.Vector3(0.38, 0.94, 1.0) },
+                    uAuroraColor3: { value: new THREE.Vector3(1.0, 0.0, 1.0) },
+                    uSkyColorBottom: { value: new THREE.Vector3(0.039, 0.086, 0.157) }, // #0A1628
+                    uSkyColorTop: { value: new THREE.Vector3(0.020, 0.020, 0.063) } // #000510
+                },
+                side: THREE.BackSide,
+                depthWrite: false
+            });
+
+            skyDome = new THREE.Mesh(geometry, skyMaterial);
+            skyDome.renderOrder = -1; // Render first
+            scene.add(skyDome);
+        }
+
+        // ============================================
+        // CREATE TWINKLING STARS
+        // ============================================
+        function createTwinklingStars() {
+            const starCount = 2000;
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(starCount * 3);
+            const sizes = new Float32Array(starCount);
+            const phases = new Float32Array(starCount);
+            const speeds = new Float32Array(starCount);
+
+            for (let i = 0; i < starCount; i++) {
+                // Random position on upper hemisphere of sphere (radius 149 to sit on sky dome)
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.random() * Math.PI * 0.5; // 0 to PI/2 for upper hemisphere
+                const radius = 149;
+                
+                positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+                positions[i * 3 + 1] = radius * Math.cos(phi);
+                positions[i * 3 + 2] = radius * Math.sin(phi) * Math.sin(theta);
+
+                // Random size with some prominent stars
+                if (Math.random() < 0.05) {
+                    sizes[i] = 3.0 + Math.random() * 2.0; // Prominent stars
+                } else {
+                    sizes[i] = 0.5 + Math.random() * 1.5; // Normal stars
+                }
+
+                // Random phase for twinkle offset
+                phases[i] = Math.random() * Math.PI * 2;
+
+                // 20% stars twinkle faster
+                speeds[i] = Math.random() < 0.2 ? 2.0 : 1.0;
+            }
+
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+            geometry.setAttribute('phase', new THREE.BufferAttribute(phases, 1));
+            geometry.setAttribute('speed', new THREE.BufferAttribute(speeds, 1));
+
+            const material = new THREE.ShaderMaterial({
+                uniforms: {
+                    uTime: { value: 0.0 },
+                    uColor: { value: new THREE.Vector3(1.0, 1.0, 1.0) }
+                },
+                vertexShader: `
+                    attribute float size;
+                    attribute float phase;
+                    attribute float speed;
+                    uniform float uTime;
+                    varying float vOpacity;
+                    
+                    void main() {
+                        vOpacity = 0.3 + sin(uTime * 2.0 * speed + phase) * 0.7;
+                        vOpacity = clamp(vOpacity, 0.3, 1.0);
+                        
+                        vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+                        gl_PointSize = size * (300.0 / -mvPosition.z);
+                        gl_Position = projectionMatrix * mvPosition;
+                    }
+                `,
+                fragmentShader: `
+                    uniform vec3 uColor;
+                    varying float vOpacity;
+                    
+                    void main() {
+                        float distance = length(gl_PointCoord - vec2(0.5));
+                        if (distance > 0.5) discard;
+                        
+                        float alpha = 1.0 - distance * 2.0;
+                        gl_FragColor = vec4(uColor, alpha * vOpacity);
+                    }
+                `,
+                transparent: true,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+
+            twinklingStars = new THREE.Points(geometry, material);
+            scene.add(twinklingStars);
+        }
+
+        // ============================================
+        // CREATE SHOOTING STAR
+        // ============================================
+        function createShootingStar() {
+            if (shootingStars.length >= 3) return; // Max 3 at once
+
+            // Random position on edge of view
+            const side = Math.floor(Math.random() * 4);
+            const startPos = new THREE.Vector3();
+            const endPos = new THREE.Vector3();
+
+            switch(side) {
+                case 0: // Top
+                    startPos.set((Math.random() - 0.5) * 100, 60, (Math.random() - 0.5) * 100);
+                    endPos.set(startPos.x - 30, startPos.y - 40, startPos.z - 30);
+                    break;
+                case 1: // Right
+                    startPos.set(60, (Math.random() - 0.5) * 60 + 30, (Math.random() - 0.5) * 100);
+                    endPos.set(startPos.x - 40, startPos.y - 30, startPos.z - 30);
+                    break;
+                case 2: // Left
+                    startPos.set(-60, (Math.random() - 0.5) * 60 + 30, (Math.random() - 0.5) * 100);
+                    endPos.set(startPos.x + 40, startPos.y - 30, startPos.z - 30);
+                    break;
+                case 3: // Back
+                    startPos.set((Math.random() - 0.5) * 100, (Math.random() - 0.5) * 60 + 40, 60);
+                    endPos.set(startPos.x - 30, startPos.y - 30, startPos.z - 50);
+                    break;
+            }
+
+            // Create elongated geometry for shooting star
+            const length = 5 + Math.random() * 5;
+            const geometry = new THREE.CylinderGeometry(0.05, 0.15, length, 8);
+            const material = new THREE.MeshBasicMaterial({
+                color: 0xFFFFFF,
+                transparent: true,
+                opacity: 0,
+                blending: THREE.AdditiveBlending
+            });
+
+            const shootingStar = new THREE.Mesh(geometry, material);
+            shootingStar.position.copy(startPos);
+            
+            // Orient towards direction
+            const direction = new THREE.Vector3().subVectors(endPos, startPos).normalize();
+            shootingStar.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction);
+
+            // Add glow
+            const glowGeometry = new THREE.SphereGeometry(0.5, 16, 16);
+            const glowMaterial = new THREE.MeshBasicMaterial({
+                color: 0xADD8E6,
+                transparent: true,
+                opacity: 0,
+                blending: THREE.AdditiveBlending
+            });
+            const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+            shootingStar.add(glow);
+
+            scene.add(shootingStar);
+
+            // Animate
+            const speed = 20 + Math.random() * 10;
+            const duration = startPos.distanceTo(endPos) / speed;
+
+            // Fade in
+            gsap.to(material, { opacity: 1, duration: 0.1 });
+            gsap.to(glowMaterial, { opacity: 0.6, duration: 0.1 });
+
+            // Move
+            gsap.to(shootingStar.position, {
+                x: endPos.x,
+                y: endPos.y,
+                z: endPos.z,
+                duration: duration,
+                ease: 'none'
+            });
+
+            // Fade out and remove
+            gsap.to(material, {
+                opacity: 0,
+                duration: 0.5,
+                delay: duration - 0.5
+            });
+
+            gsap.to(glowMaterial, {
+                opacity: 0,
+                duration: 0.5,
+                delay: duration - 0.5,
+                onComplete: () => {
+                    scene.remove(shootingStar);
+                    geometry.dispose();
+                    material.dispose();
+                    glowGeometry.dispose();
+                    glowMaterial.dispose();
+                    const index = shootingStars.indexOf(shootingStar);
+                    if (index > -1) shootingStars.splice(index, 1);
+                }
+            });
+
+            shootingStars.push(shootingStar);
+        }
+
+        // ============================================
+        // CREATE CLOUD LAYER
+        // ============================================
+        function createCloudLayer() {
+            const cloudCount = 25;
+
+            for (let i = 0; i < cloudCount; i++) {
+                // Create cloud texture using canvas
+                const cloudTexture = createCloudTexture();
+                
+                const geometry = new THREE.PlaneGeometry(8 + Math.random() * 4, 5 + Math.random() * 3);
+                const material = new THREE.MeshBasicMaterial({
+                    map: cloudTexture,
+                    transparent: true,
+                    opacity: 0.1 + Math.random() * 0.1,
+                    depthWrite: false,
+                    blending: THREE.NormalBlending
+                });
+
+                const cloud = new THREE.Mesh(geometry, material);
+                
+                // Random position
+                cloud.position.set(
+                    (Math.random() - 0.5) * 160,
+                    30 + Math.random() * 10,
+                    (Math.random() - 0.5) * 160
+                );
+
+                // Random rotation
+                cloud.rotation.z = Math.random() * Math.PI * 2;
+
+                // Random drift velocity
+                cloud.userData.velocity = new THREE.Vector3(
+                    (Math.random() - 0.5) * 0.02,
+                    0,
+                    (Math.random() - 0.5) * 0.02
+                );
+
+                scene.add(cloud);
+                cloudLayer.push(cloud);
+            }
+        }
+
+        // ============================================
+        // CREATE CLOUD TEXTURE
+        // ============================================
+        function createCloudTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 256;
+            canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+
+            // Create noise-based cloud
+            ctx.fillStyle = 'rgba(255, 255, 255, 0)';
+            ctx.fillRect(0, 0, 256, 256);
+
+            // Draw multiple overlapping circles for cloud effect
+            for (let i = 0; i < 8; i++) {
+                const x = Math.random() * 256;
+                const y = Math.random() * 256;
+                const radius = 30 + Math.random() * 60;
+                
+                const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
+                gradient.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
+                gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.3)');
+                gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+                
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, 256, 256);
+            }
+
+            const texture = new THREE.CanvasTexture(canvas);
+            return texture;
+        }
+
+        // ============================================
+        // UPDATE CLOUD LAYER
+        // ============================================
+        function updateCloudLayer() {
+            cloudLayer.forEach(cloud => {
+                // Drift
+                cloud.position.x += cloud.userData.velocity.x;
+                cloud.position.z += cloud.userData.velocity.z;
+
+                // Wrap around boundaries
+                const boundary = 80;
+                if (cloud.position.x > boundary) cloud.position.x = -boundary;
+                if (cloud.position.x < -boundary) cloud.position.x = boundary;
+                if (cloud.position.z > boundary) cloud.position.z = -boundary;
+                if (cloud.position.z < -boundary) cloud.position.z = boundary;
+
+                // Subtle rotation
+                cloud.rotation.z += 0.0002;
+            });
+        }
+
+        // ============================================
+        // CREATE STAR DUST
+        // ============================================
+        function createStarDust() {
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(CONFIG.starDustCount * 3);
+            const colors = new Float32Array(CONFIG.starDustCount * 3);
+            const sizes = new Float32Array(CONFIG.starDustCount);
+
+            for (let i = 0; i < CONFIG.starDustCount; i++) {
+                const i3 = i * 3;
+                
+                // Random position in a large sphere around tree area
+                const radius = 30 + Math.random() * 40;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.random() * Math.PI;
+                
+                positions[i3] = radius * Math.sin(phi) * Math.cos(theta);
+                positions[i3 + 1] = radius * Math.cos(phi);
+                positions[i3 + 2] = radius * Math.sin(phi) * Math.sin(theta);
+
+                // Yellow to white colors
+                const brightness = 0.8 + Math.random() * 0.2;
+                colors[i3] = brightness;
+                colors[i3 + 1] = brightness;
+                colors[i3 + 2] = brightness * 0.8;
+
+                sizes[i] = Math.random() * 2 + 0.5;
+            }
+
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+            const material = new THREE.PointsMaterial({
+                size: 0.3,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.8,
+                blending: THREE.AdditiveBlending,
+                sizeAttenuation: true
+            });
+
+            starDust = new THREE.Points(geometry, material);
+            starDust.userData = { originalPositions: positions.slice() };
+            scene.add(starDust);
+        }
+
+        // ============================================
+        // CREATE STAR GEOMETRY
+        // ============================================
+        function createStarGeometry(outerRadius = 1.5, innerRadius = 0.75, points = 5, depth = 0.3) {
+            const shape = new THREE.Shape();
+            
+            for (let i = 0; i <= points * 2; i++) {
+                const angle = (i / (points * 2)) * Math.PI * 2;
+                const radius = i % 2 === 0 ? outerRadius : innerRadius;
+                const x = Math.cos(angle) * radius;
+                const y = Math.sin(angle) * radius;
+                
+                if (i === 0) {
+                    shape.moveTo(x, y);
+                } else {
+                    shape.lineTo(x, y);
+                }
+            }
+            
+            const extrudeSettings = {
+                depth: depth,
+                bevelEnabled: true,
+                bevelSegments: 2,
+                steps: 2,
+                bevelSize: 0.1,
+                bevelThickness: 0.1
+            };
+            
+            return new THREE.ExtrudeGeometry(shape, extrudeSettings);
+        }
+
+        // ============================================
+        // CREATE TOP STAR
+        // ============================================
+        function createTopStar() {
+            // Create 5-pointed star geometry
+            const geometry = createStarGeometry(1.5, 0.75, 5, 0.3);
+            
+            const material = new THREE.MeshStandardMaterial({
+                color: CONFIG.colors.gold,
+                metalness: 0.8,
+                roughness: 0.2,
+                emissive: CONFIG.colors.gold,
+                emissiveIntensity: 0.5
+            });
+
+            topStar = new THREE.Mesh(geometry, material);
+            topStar.position.set(0, CONFIG.treeHeight / 2 + 2, 0);
+            topStar.userData = {
+                originalY: CONFIG.treeHeight / 2 + 2,
+                scatterY: 60
+            };
+            
+            scene.add(topStar);
+
+            // Add glow effect
+            const glowGeometry = new THREE.SphereGeometry(2.5, 32, 32);
+            const glowMaterial = new THREE.MeshBasicMaterial({
+                color: CONFIG.colors.gold,
+                transparent: true,
+                opacity: 0.3,
+                blending: THREE.AdditiveBlending
+            });
+            const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+            topStar.add(glow);
+        }
+
+        // ============================================
+        // CREATE SPIRAL RIBBON
+        // ============================================
+        function createSpiralRibbon() {
+            const points = [];
+            const H = CONFIG.treeHeight;
+            const R_base = CONFIG.treeBaseRadius;
+            const turns = 5; // Number of spiral turns
+
+            for (let i = 0; i < CONFIG.spiralDotCount; i++) {
+                const t = i / CONFIG.spiralDotCount;
+                const y_local = t * H;
+                const y = y_local - H / 2; // Center vertically
+                const r = R_base * (1 - y_local / H) * 0.9; // Slightly inside the tree
+                const theta = t * turns * Math.PI * 2;
+                
+                const x = r * Math.cos(theta);
+                const z = r * Math.sin(theta);
+                
+                points.push(new THREE.Vector3(x, y, z));
+            }
+
+            // Create geometry from points
+            const geometry = new THREE.BufferGeometry().setFromPoints(points);
+            
+            const material = new THREE.PointsMaterial({
+                color: CONFIG.colors.gold,
+                size: 0.15,
+                transparent: true,
+                opacity: 0.9,
+                blending: THREE.AdditiveBlending
+            });
+
+            spiralRibbon = new THREE.Points(geometry, material);
+            spiralRibbon.userData = {
+                treePositions: geometry.attributes.position.array.slice(),
+                visible: false
+            };
+            spiralRibbon.visible = false;
+            scene.add(spiralRibbon);
+        }
+
+        // ============================================
+        // CREATE SNOW SYSTEM
+        // ============================================
+        function createSnowSystem() {
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(snowCount * 3);
+            const sizes = new Float32Array(snowCount);
+
+            for (let i = 0; i < snowCount; i++) {
+                const i3 = i * 3;
+                
+                // Random position in a large area
+                positions[i3] = (Math.random() - 0.5) * 100;     // x
+                positions[i3 + 1] = Math.random() * 80 - 10;      // y (high up)
+                positions[i3 + 2] = (Math.random() - 0.5) * 100;  // z
+
+                // Random size
+                sizes[i] = Math.random() * 0.6 + 0.2; // 0.2 to 0.8
+                snowSizes.push(sizes[i]);
+
+                // Random velocity
+                snowVelocities.push({
+                    y: -(Math.random() * 0.06 + 0.02), // -0.02 to -0.08 (falling speed)
+                    x: 0,
+                    z: 0
+                });
+            }
+
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+            const material = new THREE.PointsMaterial({
+                color: 0xFFFFFF,
+                size: 0.5,
+                transparent: true,
+                opacity: 0.8,
+                blending: THREE.AdditiveBlending,
+                sizeAttenuation: true,
+                map: createSnowTexture(),
+                depthWrite: false
+            });
+
+            snowParticles = new THREE.Points(geometry, material);
+            scene.add(snowParticles);
+        }
+
+        // Create snow texture
+        function createSnowTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 32;
+            canvas.height = 32;
+            const ctx = canvas.getContext('2d');
+            
+            const gradient = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+            gradient.addColorStop(0, 'rgba(255,255,255,1)');
+            gradient.addColorStop(0.5, 'rgba(255,255,255,0.5)');
+            gradient.addColorStop(1, 'rgba(255,255,255,0)');
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 32, 32);
+            
+            const texture = new THREE.CanvasTexture(canvas);
+            return texture;
+        }
+
+        // ============================================
+        // UPDATE SNOW SYSTEM
+        // ============================================
+        function updateSnowSystem() {
+            if (!snowParticles) return;
+
+            const positions = snowParticles.geometry.attributes.position.array;
+
+            for (let i = 0; i < snowCount; i++) {
+                const i3 = i * 3;
+                const velocity = snowVelocities[i];
+
+                // Apply velocity
+                positions[i3] += velocity.x;
+                positions[i3 + 1] += velocity.y;
+                positions[i3 + 2] += velocity.z;
+
+                // Hand interaction - blow away snow
+                if (handDetected) {
+                    const dx = positions[i3] - handPosition.x;
+                    const dy = positions[i3 + 1] - handPosition.y;
+                    const dz = positions[i3 + 2] - handPosition.z;
+                    const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+                    if (distance < 5) { // Within 5 units
+                        const force = (5 - distance) / 5; // Stronger when closer
+                        velocity.x += (dx / distance) * force * 0.2;
+                        velocity.z += (dz / distance) * force * 0.2;
+                    }
+                }
+
+                // Decay horizontal velocity
+                velocity.x *= 0.98;
+                velocity.z *= 0.98;
+
+                // Reset if fallen below ground
+                if (positions[i3 + 1] < -10) {
+                    positions[i3] = (Math.random() - 0.5) * 100;
+                    positions[i3 + 1] = Math.random() * 30 + 50; // High up
+                    positions[i3 + 2] = (Math.random() - 0.5) * 100;
+                    velocity.x = 0;
+                    velocity.z = 0;
+                    velocity.y = -(Math.random() * 0.06 + 0.02);
+                }
+            }
+
+            snowParticles.geometry.attributes.position.needsUpdate = true;
+        }
+
+        // ============================================
+        // SNOW WAVE EFFECT (Gesture: Open Hand)
+        // ============================================
+        function createSnowWave(position) {
+            if (!snowParticles) return;
+
+            const positions = snowParticles.geometry.attributes.position.array;
+
+            for (let i = 0; i < Math.min(200, snowCount); i++) {
+                const randomIndex = Math.floor(Math.random() * snowCount);
+                const i3 = randomIndex * 3;
+
+                // Calculate direction from hand
+                const dx = positions[i3] - position.x;
+                const dy = positions[i3 + 1] - position.y;
+                const dz = positions[i3 + 2] - position.z;
+                const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+                if (distance < 15) {
+                    const velocity = snowVelocities[randomIndex];
+                    const force = 0.5;
+                    velocity.x += (dx / distance) * force;
+                    velocity.y += 0.3; // Upward boost
+                    velocity.z += (dz / distance) * force;
+                }
+            }
+        }
+
+        // ============================================
+        // SNOW SPIRAL EFFECT (Gesture: Fist)
+        // ============================================
+        function createSnowSpiral(position) {
+            if (!snowParticles) return;
+
+            const positions = snowParticles.geometry.attributes.position.array;
+            const time = Date.now() * 0.003;
+
+            for (let i = 0; i < snowCount; i++) {
+                const i3 = i * 3;
+                const dx = positions[i3] - position.x;
+                const dy = positions[i3 + 1] - position.y;
+                const dz = positions[i3 + 2] - position.z;
+                const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+                if (distance < 8) {
+                    const velocity = snowVelocities[i];
+                    const angle = Math.atan2(dz, dx) + 0.1; // Spiral angle
+                    const force = (8 - distance) / 8 * 0.1;
+                    
+                    velocity.x += Math.cos(angle) * force;
+                    velocity.z += Math.sin(angle) * force;
+                    velocity.y += Math.sin(time + i * 0.1) * 0.05; // Oscillate vertically
+                }
+            }
+        }
+
+        // ============================================
+        // TRANSITION STATE
+        // ============================================
+        function transitionState(toGathered) {
+            if (animating) return;
+            animating = true;
+
+            const btn = document.getElementById('toggleBtn');
+            btn.disabled = true;
+
+            if (toGathered) {
+                gatherAll();
+            } else {
+                scatterAll();
+            }
+
+            // Re-enable button after animation
+            setTimeout(() => {
+                animating = false;
+                btn.disabled = false;
+                btn.className = toGathered ? 'btn btn-scatter' : 'btn btn-gather';
+                btn.innerHTML = toGathered ? '💥 Scatter' : '🎄 Gather';
+            }, CONFIG.animationDuration * 1000);
+        }
+
+        // ============================================
+        // GATHER ALL (FORM TREE)
+        // ============================================
+        function gatherAll() {
+            // Change star light back to gold
+            if (starLight) {
+                gsap.to(starLight.color, {
+                    r: 0xFF / 255,
+                    g: 0xD7 / 255,
+                    b: 0x00 / 255,
+                    duration: 0.5
+                });
+            }
+
+            // Animate ornaments to tree positions
+            ornaments.forEach((mesh, index) => {
+                const delay = index * 0.002; // Stagger effect
+                
+                gsap.to(mesh.position, {
+                    x: mesh.userData.treePosition.x,
+                    y: mesh.userData.treePosition.y,
+                    z: mesh.userData.treePosition.z,
+                    duration: CONFIG.animationDuration,
+                    delay: delay,
+                    ease: CONFIG.animationEase
+                });
+            });
+
+            // Animate top star
+            gsap.to(topStar.position, {
+                y: topStar.userData.originalY,
+                duration: CONFIG.animationDuration,
+                ease: CONFIG.animationEase
+            });
+
+            gsap.to(topStar.rotation, {
+                y: Math.PI * 4,
+                duration: CONFIG.animationDuration,
+                ease: "power2.out"
+            });
+
+            // Show spiral ribbon
+            setTimeout(() => {
+                spiralRibbon.visible = true;
+                spiralRibbon.material.opacity = 0;
+                gsap.to(spiralRibbon.material, {
+                    opacity: 0.9,
+                    duration: 0.5
+                });
+            }, CONFIG.animationDuration * 500);
+        }
+
+        // ============================================
+        // SCATTER ALL (CHAOS MODE)
+        // ============================================
+        function scatterAll() {
+            // Change star light to ice blue
+            if (starLight) {
+                gsap.to(starLight.color, {
+                    r: 0xE1 / 255,
+                    g: 0xF5 / 255,
+                    b: 0xFE / 255,
+                    duration: 0.5
+                });
+            }
+
+            // Generate new scatter positions and animate
+            ornaments.forEach((mesh, index) => {
+                // Generate new random scatter position
+                mesh.userData.scatterPosition = calculateScatterPosition();
+                
+                const delay = index * 0.002;
+                
+                gsap.to(mesh.position, {
+                    x: mesh.userData.scatterPosition.x,
+                    y: mesh.userData.scatterPosition.y,
+                    z: mesh.userData.scatterPosition.z,
+                    duration: CONFIG.animationDuration,
+                    delay: delay,
+                    ease: CONFIG.animationEase
+                });
+            });
+
+            // Animate top star up
+            gsap.to(topStar.position, {
+                y: topStar.userData.scatterY,
+                duration: CONFIG.animationDuration,
+                ease: CONFIG.animationEase
+            });
+
+            // Hide spiral ribbon
+            gsap.to(spiralRibbon.material, {
+                opacity: 0,
+                duration: 0.3,
+                onComplete: () => {
+                    spiralRibbon.visible = false;
+                }
+            });
+        }
+
+        // ============================================
+        // TOGGLE STATE
+        // ============================================
+        function toggleState() {
+            isGathered = !isGathered;
+            transitionState(isGathered);
+        }
+
+        // ============================================
+        // ANIMATION LOOP
+        // ============================================
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const time = Date.now() * 0.001;
+
+            // Update sky dome aurora animation
+            if (skyMaterial) {
+                skyMaterial.uniforms.uTime.value = time;
+            }
+
+            // Update twinkling stars
+            if (twinklingStars) {
+                twinklingStars.material.uniforms.uTime.value = time;
+            }
+
+            // Shooting stars spawn
+            shootingStarTimer += 0.016; // ~60fps
+            const nextShootingStarTime = 3 + Math.random() * 3; // 3-6 seconds
+            if (shootingStarTimer > nextShootingStarTime) {
+                createShootingStar();
+                shootingStarTimer = 0;
+            }
+
+            // Update cloud layer
+            updateCloudLayer();
+
+            // Update snow system
+            updateSnowSystem();
+
+            // Rotate ornaments
+            ornaments.forEach(mesh => {
+                mesh.rotation.x += mesh.userData.rotationSpeed.x;
+                mesh.rotation.y += mesh.userData.rotationSpeed.y;
+                mesh.rotation.z += mesh.userData.rotationSpeed.z;
+            });
+
+            // Animate top star
+            if (topStar) {
+                topStar.rotation.y += 0.01;
+                topStar.rotation.x = Math.sin(time) * 0.1;
+            }
+
+            // Animate star dust (subtle movement)
+            if (starDust) {
+                const positions = starDust.geometry.attributes.position.array;
+                const original = starDust.userData.originalPositions;
+                
+                for (let i = 0; i < positions.length; i += 3) {
+                    positions[i] = original[i] + Math.sin(time + i) * 0.5;
+                    positions[i + 1] = original[i + 1] + Math.cos(time + i) * 0.5;
+                    positions[i + 2] = original[i + 2] + Math.sin(time + i * 0.5) * 0.5;
+                }
+                starDust.geometry.attributes.position.needsUpdate = true;
+            }
+
+            // Update controls
+            controls.update();
+
+            // Render
+            renderer.render(scene, camera);
+        }
+
+        // ============================================
+        // WINDOW RESIZE
+        // ============================================
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        // ============================================
+        // HAND TRACKING SYSTEM
+        // ============================================
+        async function toggleHandTracking() {
+            const btn = document.getElementById('handTrackingBtn');
+            const webcamContainer = document.getElementById('webcam-container');
+            const gestureDisplay = document.getElementById('gesture-display');
+            const instruction = document.getElementById('hand-instruction');
+
+            if (!handTrackingEnabled) {
+                // Enable hand tracking
+                btn.textContent = '⏳ Loading...';
+                btn.disabled = true;
+
+                try {
+                    await initHandTracking();
+                    handTrackingEnabled = true;
+                    btn.textContent = '🛑 Stop Hand Control';
+                    btn.classList.add('active');
+                    webcamContainer.classList.add('active');
+                    gestureDisplay.classList.add('active');
+                    instruction.classList.add('active');
+                } catch (error) {
+                    console.error('Hand tracking error:', error);
+                    alert('Could not start hand tracking. Please ensure camera access is allowed.');
+                    btn.textContent = '✋ Hand Control';
+                }
+                btn.disabled = false;
+            } else {
+                // Disable hand tracking
+                stopHandTracking();
+                handTrackingEnabled = false;
+                btn.textContent = '✋ Hand Control';
+                btn.classList.remove('active');
+                webcamContainer.classList.remove('active');
+                gestureDisplay.classList.remove('active');
+                instruction.classList.remove('active');
+            }
+        }
+
+        async function initHandTracking() {
+            const videoElement = document.getElementById('webcam');
+            const canvasElement = document.getElementById('hand-canvas');
+            const canvasCtx = canvasElement.getContext('2d');
+
+            // Initialize MediaPipe Hands
+            handsDetector = new Hands({
+                locateFile: (file) => {
+                    return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+                }
+            });
+
+            handsDetector.setOptions({
+                maxNumHands: 1,
+                modelComplexity: 1,
+                minDetectionConfidence: 0.7,
+                minTrackingConfidence: 0.5
+            });
+
+            handsDetector.onResults((results) => onHandResults(results, canvasElement, canvasCtx));
+
+            // Initialize Camera
+            handCamera = new Camera(videoElement, {
+                onFrame: async () => {
+                    if (handsDetector) {
+                        await handsDetector.send({ image: videoElement });
+                    }
+                },
+                width: 320,
+                height: 240
+            });
+
+            await handCamera.start();
+        }
+
+        function stopHandTracking() {
+            if (handCamera) {
+                handCamera.stop();
+                handCamera = null;
+            }
+            if (handsDetector) {
+                handsDetector.close();
+                handsDetector = null;
+            }
+            lastGesture = null;
+        }
+
+        function onHandResults(results, canvasElement, canvasCtx) {
+            // Set canvas size
+            canvasElement.width = 320;
+            canvasElement.height = 240;
+
+            // Clear canvas
+            canvasCtx.save();
+            canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+
+            if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+                const landmarks = results.multiHandLandmarks[0];
+
+                // Draw hand connections and landmarks
+                drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, {
+                    color: '#00FF00',
+                    lineWidth: 3
+                });
+                drawLandmarks(canvasCtx, landmarks, {
+                    color: '#FF0000',
+                    lineWidth: 1,
+                    radius: 3
+                });
+
+                // Update hand position for snow interaction
+                handDetected = true;
+                const palmCenter = landmarks[9]; // Middle finger MCP as palm center
+                // Map from normalized coordinates to 3D space
+                handPosition.x = (palmCenter.x - 0.5) * 80;
+                handPosition.y = (0.5 - palmCenter.y) * 60;
+                handPosition.z = 20;
+
+                // Detect gesture
+                const gesture = detectGesture(landmarks);
+                updateGestureDisplay(gesture);
+
+                // Snow effects based on gesture
+                const currentTime = Date.now();
+                
+                // Continuous spiral effect when fist is held
+                if (gesture === 'fist') {
+                    createSnowSpiral(handPosition);
+                }
+
+                // Trigger action based on gesture
+                if (gesture !== lastGesture && currentTime - lastGestureTime > gestureDebounceTime) {
+                    if (gesture === 'fist' && !isGathered && !animating) {
+                        isGathered = true;
+                        transitionState(true);
+                        updateButtonState();
+                        lastGestureTime = currentTime;
+                    } else if (gesture === 'open' && isGathered && !animating) {
+                        isGathered = false;
+                        transitionState(false);
+                        updateButtonState();
+                        // Snow wave effect
+                        createSnowWave(handPosition);
+                        lastGestureTime = currentTime;
+                    } else if (gesture === 'open') {
+                        // Even if not changing state, create wave effect
+                        createSnowWave(handPosition);
+                        lastGestureTime = currentTime;
+                    }
+                    lastGesture = gesture;
+                }
+            } else {
+                updateGestureDisplay('none');
+                handDetected = false;
+            }
+
+            canvasCtx.restore();
+        }
+
+        function detectGesture(landmarks) {
+            // Finger tip indices: thumb(4), index(8), middle(12), ring(16), pinky(20)
+            // Finger MCP (base) indices: thumb(2), index(5), middle(9), ring(13), pinky(17)
+            // Finger PIP (middle joint) indices: thumb(3), index(6), middle(10), ring(14), pinky(18)
+
+            const fingerTips = [4, 8, 12, 16, 20];
+            const fingerPIPs = [3, 6, 10, 14, 18];
+            const fingerMCPs = [2, 5, 9, 13, 17];
+
+            let fingersExtended = 0;
+
+            // Check thumb (compare x position for horizontal spread)
+            const thumbTip = landmarks[4];
+            const thumbIP = landmarks[3];
+            const thumbMCP = landmarks[2];
+            
+            // Thumb is extended if tip is far from palm center
+            const palmCenter = landmarks[0]; // wrist
+            const thumbExtended = Math.abs(thumbTip.x - palmCenter.x) > 0.1;
+            if (thumbExtended) fingersExtended++;
+
+            // Check other 4 fingers (compare y positions - lower y = higher on screen = extended)
+            for (let i = 1; i < 5; i++) {
+                const tipY = landmarks[fingerTips[i]].y;
+                const pipY = landmarks[fingerPIPs[i]].y;
+                const mcpY = landmarks[fingerMCPs[i]].y;
+
+                // Finger is extended if tip is above (lower y) the PIP joint
+                if (tipY < pipY - 0.02) {
+                    fingersExtended++;
+                }
+            }
+
+            // Determine gesture
+            if (fingersExtended >= 4) {
+                return 'open'; // Open hand - Scatter
+            } else if (fingersExtended <= 1) {
+                return 'fist'; // Fist - Gather
+            } else {
+                return 'partial';
+            }
+        }
+
+        function updateGestureDisplay(gesture) {
+            const gestureIcon = document.getElementById('gestureIcon');
+            const gestureText = document.getElementById('gestureText');
+
+            switch (gesture) {
+                case 'fist':
+                    gestureIcon.textContent = '✊';
+                    gestureText.textContent = 'Nắm tay → GATHER';
+                    gestureText.style.color = '#4ADE80';
+                    break;
+                case 'open':
+                    gestureIcon.textContent = '🖐️';
+                    gestureText.textContent = 'Mở tay → SCATTER';
+                    gestureText.style.color = '#F87171';
+                    break;
+                case 'partial':
+                    gestureIcon.textContent = '🤚';
+                    gestureText.textContent = 'Detecting...';
+                    gestureText.style.color = '#FFD700';
+                    break;
+                case 'none':
+                    gestureIcon.textContent = '👋';
+                    gestureText.textContent = 'Show your hand';
+                    gestureText.style.color = '#FFD700';
+                    break;
+            }
+        }
+
+        function updateButtonState() {
+            const btn = document.getElementById('toggleBtn');
+            btn.className = isGathered ? 'btn btn-scatter' : 'btn btn-gather';
+            btn.innerHTML = isGathered ? '💥 Scatter' : '🎄 Gather';
+        }
+
+        // ============================================
+        // START
+        // ============================================
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
