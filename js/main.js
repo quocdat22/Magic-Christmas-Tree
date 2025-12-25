@@ -15,7 +15,7 @@ import { setupCamera, setupControls, setupRenderer, onWindowResize } from './sce
 // Entities
 import { createOrnaments, updateOrnaments } from './entities/ornaments.js';
 import { createTopStar, updateStar, createStarDust, updateStarDust } from './entities/star.js';
-import { createSpiralRibbon } from './entities/spiral-ribbon.js';
+import { createSpiralRibbon, updateSpiralRibbon } from './entities/spiral-ribbon.js';
 import { createSnowSystem, updateSnowSystem } from './entities/snow.js';
 
 // Animations
@@ -184,6 +184,9 @@ function animate() {
 
     // Animate star dust (subtle movement)
     updateStarDust(starDust, time);
+
+    // Update spiral ribbon animation
+    updateSpiralRibbon(spiralRibbon, time, CONFIG);
 
     // Update controls
     controls.update();
