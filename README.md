@@ -2,6 +2,8 @@
 
 An interactive 3D Christmas tree visualization with hand gesture controls, powered by Three.js, GSAP, and MediaPipe.
 
+![Magic Christmas Tree](assets/image.png)
+
 ## ✨ Features
 
 - **Interactive Christmas Tree**: 500+ animated ornaments that can gather into a tree or scatter into space
@@ -43,7 +45,9 @@ magic-christmas-tree/
 │   ├── animations/        # Animation logic
 │   ├── interactions/      # Hand tracking
 │   └── utils/             # Utility functions
-└── assets/                 # Future assets
+├── assets/                 # Project assets
+│   └── image.png          # Preview screenshot
+└── README.md              # Documentation
 ```
 
 ## 🛠️ Technologies
